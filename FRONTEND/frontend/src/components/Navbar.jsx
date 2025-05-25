@@ -1,545 +1,201 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  height: auto;
-  overflow-y: auto;
-}
-
-/* Apply Playfair Display to all text */
-body, h1, h2, h3, h4, h5, h6, p, span, a, button, input {
-  font-family: 'Playfair Display', serif;
-}
-
-/* Utility classes */
-.bg-white { background-color: #ffffff; }
-.text-red-500 { color: #ef4444; }
-.text-green-500 { color: #10b981; }
-.text-gray-700 { color: #4b5563; }
-.text-gray-600 { color: #6b7280; }
-.text-blue-600 { color: #2563eb; }
-.text-white { color: #ffffff; }
-.bg-blue-600 { background-color: #2563eb; }
-.bg-blue-700 { background-color: #1d4ed8; }
-.p-2 { padding: 0.5rem; }
-.p-6 { padding: 1.5rem; }
-.mt-1 { margin-top: 0.25rem; }
-.mt-4 { margin-top: 1rem; }
-.mb-4 { margin-bottom: 1rem; }
-.w-full { width: 100%; }
-.rounded-md { border-radius: 0.375rem; }
-.border { border: 1px solid #d1d5db; }
-.focus\:outline-none:focus { outline: none; }
-.focus\:ring-2:focus { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5); }
-.focus\:ring-blue-500:focus { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5); }
-.h-4 { height: 1rem; }
-.w-4 { width: 1rem; }
-.border-gray-300 { border-color: #d1d5db; }
-.ml-2 { margin-left: 0.5rem; }
-.text-sm { font-size: 0.875rem; }
-.font-medium { font-weight: 500; }
-.font-bold { font-weight: 700; }
-.text-xl { font-size: 1.25rem; }
-.text-2xl { font-size: 1.5rem; }
-.text-3xl { font-size: 1.875rem; }
-.text-4xl { font-size: 2.25rem; }
-.space-y-4 > * + * { margin-top: 1rem; }
-.transition { transition: all 0.2s; }
-.hover\:bg-blue-700:hover { background-color: #1d4ed8; }
-.hover\:underline:hover { text-decoration: underline; }
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.justify-center { justify-content: center; }
-.gap-4 { gap: 1rem; }
-.max-w-7xl { max-width: 80rem; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-/* Navbar Styles */
-.navbar {
-  background: #a3bffa;
-  color: #000000;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navbar-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #000000;
-  text-decoration: none;
-}
-
-.navbar-links {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.nav-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.nav-icon {
-  font-size: 1.5rem;
-  color: #000000;
-  cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.nav-icon:hover {
-  transform: scale(1.2);
-  color: #2563eb;
-}
-
-.notification-wrapper {
-  position: relative;
-}
-
-.notification-dot {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 8px;
-  height: 8px;
-  background: #ef4444;
-  border-radius: 50%;
-}
-
-.dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  z-index: 1000;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 0.875rem;
-  color: #000000;
-  cursor: pointer;
-}
-
-.dropdown-item:hover {
-  background: #f1f5f9;
-}
-
-.dropdown-clear {
-  border-top: 1px solid #d1d5db;
-  color: #ef4444;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-}
-
-.search-wrapper {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-}
-
-.search-icon {
-  font-size: 1rem;
-  color: #000000;
-}
-
-.search-input {
-  border: none;
-  outline: none;
-  font-size: 0.875rem;
-  width: 150px;
-}
-
-.navbar-support {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.support-button {
-  background: #2563eb;
-  color: #ffffff;
-  padding: 0.5rem 1.5rem;
-  border-radius: 9999px;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background 0.2s, transform 0.2s;
-}
-
-.support-button:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
-
-.navbar-auth {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-/* Home Page Styles */
-.home-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #ffffff;
-}
-
-/* Section Styles */
-.section {
-  padding: 4rem 1rem;
-  background: #ffffff;
-  text-align: center;
-}
-
-.container15 {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 3rem;
-}
-
-.section-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  align-items: center;
-}
-
-.section-card {
-  background: #a3bffa;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  transition: transform 0.3s, box-shadow 0.3s;
-  width: 100%;
-  max-width: 600px;
-}
-
-.section-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.section-card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #000000;
-  margin-bottom: 1rem;
-}
-
-.section-card-text {
-  font-size: 1rem;
-  color: #000000;
-}
-
-.section-card-link {
-  color: #2563eb;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  display: block;
-  margin-top: 1rem;
-}
-
-.section-card-link:hover {
-  text-decoration: underline;
-}
-
-/* Footer Styles */
-.footer {
-  background: #1f2937;
-  color: #ffffff;
-  padding: 4rem 1rem 2rem;
-  margin-top: auto;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-}
-
-.footer-section {
-  margin-bottom: 1rem;
-}
-
-.footer-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.footer-links {
-  list-style: none;
-}
-
-.footer-link {
-  color: #d1d5db;
-  text-decoration: none;
-  font-size: 0.875rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.footer-link:hover {
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  text-align: center;
-  padding-top: 2rem;
-  border-top: 1px solid #4b5563;
-  margin-top: 2rem;
-  font-size: 0.875rem;
-}
-
-/* Form Styles */
-.form-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #4b5563;
-  margin-bottom: 0.25rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  outline: none;
-}
-
-.form-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.form-input-checkbox {
-  height: 1rem;
-  width: 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
-}
-
-.form-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.button {
-  background: #a3bffa;
-  color: #000000;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: opacity 0.3s, transform 0.2s;
-}
-
-.button:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.button-deny {
-  background: #ff4d4d;
-  color: #ffffff;
-}
-
-.button-deny:hover {
-  opacity: 0.8;
-}
-
-.form-links {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.link-button {
-  color: #2563eb;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.link-button:hover {
-  text-decoration: underline;
-}
-
-/* Registration Page Styles */
-.registration-section {
-  padding: 4rem 1rem;
-  background: #f8fafc;
-  text-align: center;
-}
-
-.registration-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 3rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.user-container-link {
-  text-decoration: none;
-}
-
-.user-container {
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.user-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.user-container-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #000000;
-}
-
-/* Dashboard Styles */
-.dashboard-section {
-  padding: 4rem 1rem;
-  text-align: center;
-}
-
-/* Hero Section Styles */
-.hero-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-  background: linear-gradient(135deg, #b3d8ff, #e6f0ff);
-  text-align: center;
-  padding: 2rem 1rem;
-  overflow: hidden;
-}
-
-.hero-content {
-  max-width: 800px;
-  z-index: 1;
-}
-
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 1.5rem;
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  color: #4b5563;
-  max-width: 600px;
-  margin: 0 auto 2rem;
-  line-height: 1.6;
-}
-
-.join-us-button {
-  background: #2563eb;
-  color: #ffffff;
-  padding: 0.75rem 2rem;
-  border-radius: 6px;
-  border: none;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.join-us-button:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
-
-@media (max-width: 640px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-}
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaInfoCircle, FaHome, FaBell, FaBook, FaSearch } from 'react-icons/fa';
+import { NotificationContext } from '../contexts/NotificationContext.jsx';
+import { AuthContext } from '../contexts/AuthContext.jsx';
+
+function Navbar() {
+  const [showContactDropdown, setShowContactDropdown] = useState(false);
+  const [showCoursesDropdown, setShowCoursesDropdown] = useState(false);
+  const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  const { notifications, addNotification, clearNotifications } = useContext(NotificationContext);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleContactClick = (action) => {
+    if (!user) {
+      addNotification('Please register or log in to access this feature.');
+      setShowContactDropdown(false);
+    } else if (user.userType === 'Student' && action === 'Contact Teacher') {
+      navigate('/contact', { state: { contactType: action } });
+    } else if (user.userType === 'Teacher' || user.userType === 'Admin') {
+      navigate('/contact', { state: { contactType: action } });
+    } else {
+      addNotification('Access denied for your user type.');
+    }
+  };
+
+  const handleCourseClick = (course) => {
+    if (!user) {
+      addNotification('Please register or log in to access this feature.');
+      setShowCoursesDropdown(false);
+    } else if (user.userType === 'Student' || user.userType === 'Teacher' || user.userType === 'Trainer') {
+      console.log(`Selected course: ${course}`);
+      if (user.userType === 'Student') {
+        console.log('Student can download course materials');
+      }
+    } else {
+      addNotification('Access denied for your user type.');
+    }
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="container">
+        <Link to="/" className="navbar-logo">E.4C</Link>
+        <div className="navbar-links">
+          <div
+            className="nav-item"
+            onMouseEnter={() => setShowContactDropdown(true)}
+            onMouseLeave={() => setShowContactDropdown(false)}
+          >
+            <FaInfoCircle
+              className="nav-icon"
+              onClick={() => user && navigate('/contact')}
+              data-name="Contact"
+            />
+            {showContactDropdown && (
+              <div className="dropdown">
+                <button
+                  className="dropdown-item"
+                  onClick={() => handleContactClick('Contact Admin')}
+                >
+                  Contact Admin
+                </button>
+                <button
+                  className="dropdown-item"
+                  onClick={() => handleContactClick('Contact Teacher')}
+                >
+                  Contact Teacher
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="nav-item">
+            <Link to="/">
+              <FaHome className="nav-icon" data-name="Home" />
+            </Link>
+          </div>
+          <div
+            className="nav-item"
+            onMouseEnter={() => setShowCoursesDropdown(true)}
+            onMouseLeave={() => setShowCoursesDropdown(false)}
+          >
+            <FaBook
+              className="nav-icon"
+              data-name="Courses"
+            />
+            {showCoursesDropdown && (
+              <div className="dropdown">
+                {['Math 101', 'Science 202', 'History 303'].map((course) => (
+                  <button
+                    key={course}
+                    className="dropdown-item"
+                    onClick={() => handleCourseClick(course)}
+                  >
+                    {course}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div
+            className="nav-item"
+            onMouseEnter={() => setShowNotificationsDropdown(true)}
+            onMouseLeave={() => setShowNotificationsDropdown(false)}
+          >
+            <div className="notification-wrapper">
+              <FaBell
+                className="nav-icon"
+                data-name="Notifications"
+              />
+              {notifications.length > 0 && <span className="notification-dot"></span>}
+            </div>
+            {showNotificationsDropdown && (
+              <div className="dropdown">
+                {notifications.length === 0 ? (
+                  <div className="dropdown-item">No notifications</div>
+                ) : (
+                  <>
+                    {notifications.map((notif) => (
+                      <div key={notif.id} className="dropdown-item">
+                        {notif.message}
+                      </div>
+                    ))}
+                    <button
+                      className="dropdown-item dropdown-clear"
+                      onClick={clearNotifications}
+                    >
+                      Clear Notifications
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="nav-item search-container">
+            {showSearchInput ? (
+              <div className="search-wrapper">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="Search..."
+                  onBlur={() => setShowSearchInput(false)}
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <FaSearch
+                className="nav-icon"
+                onClick={() => setShowSearchInput(true)}
+                data-name="Search"
+              />
+            )}
+          </div>
+          {user && user.userType === 'Teacher' && (
+            <div className="nav-item">
+              <Link to="/teacher/announce">
+                <span className="nav-icon" data-name="Announce Test">📢</span>
+              </Link>
+            </div>
+          )}
+          {user && user.userType === 'Trainer' && (
+            <div className="nav-item">
+              <Link to="/trainer/formation">
+                <span className="nav-icon" data-name="Propose Formation">📝</span>
+              </Link>
+            </div>
+          )}
+          {user && user.userType === 'Admin' && (
+            <div className="nav-item">
+              <Link to="/admin/dashboard">
+                <span className="nav-icon" data-name="Dashboard">📊</span>
+              </Link>
+            </div>
+          )}
+        </div>
+        <div className="navbar-support">
+          <Link to="/support" className="support-button">Support</Link>
+          {user ? (
+            <div className="navbar-auth">
+              <span>Welcome, {user.email}</span>
+              <button
+                className="button"
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
