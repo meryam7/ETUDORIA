@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import ForgotPasswordForm from '../components/ForgotPasswordForm';
-import { NotificationContext } from '../contexts/NotificationContext.jsx';
-import { AuthContext } from '../contexts/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import { NotificationContext } from '../contexts/NotificationContext';
+import { AuthContext } from '../contexts/AuthContext';
 
-function StudentRegistrationForm({ setShowLogin }) {
+function StudentRegistrationForm() {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
+    confirmPassword: '',
     gradeLevel: '',
     gradeYear: '',
     masterType: '',
@@ -20,7 +20,8 @@ function StudentRegistrationForm({ setShowLogin }) {
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { addNotification } = useContext(NotificationContext);
   const { register } = useContext(AuthContext);
 
@@ -29,9 +30,9 @@ function StudentRegistrationForm({ setShowLogin }) {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/getGradeOptions`);
         setGradeOptions(response.data.data);
-      } catch (_err) {
+      } catch (err) {
         setError('Failed to fetch grade options');
-        console.error('Error fetching grade options:', _err);
+        console.error('Error fetching grade options:', err);
       }
     };
     fetchGradeOptions();
@@ -51,9 +52,9 @@ function StudentRegistrationForm({ setShowLogin }) {
           );
           setDepartmentOptions(response.data.data);
           setFormData(prev => ({ ...prev, departmentName: '' }));
-        } catch (_err) {
+        } catch (err) {
           setError('Failed to fetch department options');
-          console.error('Error fetching department options:', _err);
+          console.error('Error fetching department options:', err);
         }
       }
     };
@@ -80,16 +81,22 @@ function StudentRegistrationForm({ setShowLogin }) {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setLoading(true);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
 
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/register/student`,
         formData
       );
-      const token = register(formData.email, formData.password, 'Student', formData);
+      await register(formData.email, formData.password, 'Student', formData);
       setSuccess('Registration successful! Check your email for confirmation.');
       addNotification(`Confirmation email sent to ${formData.email}.`);
-      console.log(`Navigate to: /confirm/${token}`);
       
       if (formData.rememberMe) {
         localStorage.setItem('studentCredentials', JSON.stringify({
@@ -102,29 +109,50 @@ function StudentRegistrationForm({ setShowLogin }) {
         username: '',
         email: '',
         password: '',
+        confirmPassword: '',
         gradeLevel: '',
         gradeYear: '',
         masterType: '',
         departmentName: '',
         rememberMe: false,
       });
-    } catch (_err) {
-      setError(_err.response?.data?.message || 'Registration failed');
-      console.error('Registration error:', _err);
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      gradeLevel: '',
+      gradeYear: '',
+      masterType: '',
+      departmentName: '',
+      rememberMe: false,
+    });
+    setError('');
+    setSuccess('');
+    navigate('/signup');
+  };
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Sign Up as Student</h2>
+    <div className="form-container">
+      <h2>Sign Up as Student</h2>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {success && <p className="text-green-500 mb-4">{success}</p>}
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
+        <div className="form-row">
+          <label htmlFor="username" className="form-label">Username</label>
           <input
             id="username"
             type="text"
@@ -132,13 +160,12 @@ function StudentRegistrationForm({ setShowLogin }) {
             value={formData.username}
             onChange={handleChange}
             required
-            className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-input"
+            disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
+        <div className="form-row">
+          <label htmlFor="email" className="form-label">Email</label>
           <input
             id="email"
             type="email"
@@ -146,13 +173,12 @@ function StudentRegistrationForm({ setShowLogin }) {
             value={formData.email}
             onChange={handleChange}
             required
-            className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-input"
+            disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
+        <div className="form-row">
+          <label htmlFor="password" className="form-label">Password</label>
           <input
             id="password"
             type="password"
@@ -161,20 +187,34 @@ function StudentRegistrationForm({ setShowLogin }) {
             onChange={handleChange}
             required
             minLength={8}
-            className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-input"
+            disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="gradeLevel" className="block text-sm font-medium text-gray-700">
-            Grade Level
-          </label>
+        <div className="form-row">
+          <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            minLength={8}
+            className="form-input"
+            disabled={loading}
+          />
+        </div>
+        <div className="form-row">
+          <label htmlFor="gradeLevel" className="form-label">Grade Level</label>
           <select
             id="gradeLevel"
             name="gradeLevel"
             value={formData.gradeLevel}
             onChange={handleChange}
             required
-            className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-input"
+            disabled={loading}
           >
             <option value="">Select Grade Level</option>
             <option value="Bachelor">Bachelor</option>
@@ -182,17 +222,16 @@ function StudentRegistrationForm({ setShowLogin }) {
           </select>
         </div>
         {formData.gradeLevel && (
-          <div>
-            <label htmlFor="gradeYear" className="block text-sm font-medium text-gray-700">
-              Year
-            </label>
+          <div className="form-row">
+            <label htmlFor="gradeYear" className="form-label">Year</label>
             <select
               id="gradeYear"
               name="gradeYear"
               value={formData.gradeYear}
               onChange={handleChange}
               required
-              className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
+              disabled={loading}
             >
               <option value="">Select Year</option>
               {gradeOptions
@@ -206,17 +245,16 @@ function StudentRegistrationForm({ setShowLogin }) {
           </div>
         )}
         {formData.gradeLevel === 'Master' && (
-          <div>
-            <label htmlFor="masterType" className="block text-sm font-medium text-gray-700">
-              Master Type
-            </label>
+          <div className="form-row">
+            <label htmlFor="masterType" className="form-label">Master Type</label>
             <select
               id="masterType"
               name="masterType"
               value={formData.masterType}
               onChange={handleChange}
               required
-              className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
+              disabled={loading}
             >
               <option value="">Select Master Type</option>
               <option value="Research">Research</option>
@@ -225,17 +263,16 @@ function StudentRegistrationForm({ setShowLogin }) {
           </div>
         )}
         {formData.gradeLevel && formData.gradeYear && (
-          <div>
-            <label htmlFor="departmentName" className="block text-sm font-medium text-gray-700">
-              Department
-            </label>
+          <div className="form-row">
+            <label htmlFor="departmentName" className="form-label">Department</label>
             <select
               id="departmentName"
               name="departmentName"
               value={formData.departmentName}
               onChange={handleChange}
               required
-              className="mt-1 w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
+              disabled={loading}
             >
               <option value="">Select Department</option>
               {departmentOptions.map(dept => (
@@ -253,42 +290,42 @@ function StudentRegistrationForm({ setShowLogin }) {
             name="rememberMe"
             checked={formData.rememberMe}
             onChange={handleChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="form-input-checkbox"
+            disabled={loading}
           />
           <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">
             Remember Me
           </label>
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
-        >
-          Submit
-        </button>
+        <div className="form-buttons">
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? 'Submitting...' : 'Send'}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="button button-deny"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
-      <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
+      <div className="form-links">
+        <p>
           Already have an account?{' '}
           <button
             type="button"
-            onClick={() => setShowLogin(true)}
-            className="text-blue-600 hover:underline focus:outline-none"
+            onClick={() => navigate('/login/student')}
+            className="link-button"
+            disabled={loading}
           >
-            Login
+            Sign in
           </button>
         </p>
       </div>
-      {showForgotPassword && (
-        <ForgotPasswordForm 
-          setShowForgotPassword={setShowForgotPassword} 
-        />
-      )}
     </div>
   );
 }
-
-StudentRegistrationForm.propTypes = {
-  setShowLogin: PropTypes.func.isRequired,
-};
 
 export default StudentRegistrationForm;

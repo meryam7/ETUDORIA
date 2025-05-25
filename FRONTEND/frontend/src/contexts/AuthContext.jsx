@@ -1,36 +1,35 @@
 import React, { createContext, useState } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 
 export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('authToken'));
-  const [user, setUser] = useState(
-    localStorage.getItem('user')
-      ? JSON.parse(localStorage.getItem('user'))
-      : { email: '', userType: '' }
-  );
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
 
-  const login = (token, userData) => {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setIsAuthenticated(true);
-    setUser(userData);
+  const register = async (email, password, userType, formData) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/register/${userType.toLowerCase()}`, formData);
+      const { userId, token } = response.data;
+      setUser({ email, userType, userId, ...formData });
+      localStorage.setItem('token', token);
+      return token;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Registration failed');
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setUser({ email: '', userType: '' });
+  const login = async (email, userType, userData, token) => {
+    setUser({ email, userType, ...userData });
+    localStorage.setItem('token', token);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ user, register, login }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,

@@ -1,30 +1,47 @@
-import React, { useState } from 'react';
-import { FaGoogle, FaLinkedin } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../contexts/AuthContext';
+import { NotificationContext } from '../contexts/NotificationContext';
 
 function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { userType } = useParams();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const { addNotification } = useContext(NotificationContext);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+    setError('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
     setLoading(true);
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        email,
-        password,
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        email: formData.email,
+        password: formData.password,
+        userType: userType.toLowerCase(),
       });
-      setSuccess('Login successful! Redirecting...');
-      setTimeout(() => {
-        window.location.href = '/dashboard'; // Adjust redirect as needed
-      }, 2000);
+
+      const { token, userId, username } = response.data;
+
+      login(formData.email, userType.toLowerCase(), { userId, username }, token);
+      addNotification('Login successful!', 'success');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
@@ -32,75 +49,72 @@ function LoginForm() {
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      email: '',
+      password: '',
+    });
+    setError('');
+    navigate(`/signup/${userType.toLowerCase()}`);
+  };
+
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center' }}>Login to Etudoria</h2>
-      {error && (
-        <div className="alert error">
-          <p>{error}</p>
-        </div>
-      )}
-      {success && (
-        <div className="alert success">
-          <p>{success}</p>
-        </div>
-      )}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div>
-          <label htmlFor="login-email" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-            Email
-          </label>
+    <div className="form-container">
+      <h2>Sign In as {userType}</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="form-row">
+          <label htmlFor="email" className="form-label">Email</label>
           <input
-            id="login-email"
+            id="email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             required
-            className="input"
-            placeholder="Enter your email"
+            className="form-input"
+            disabled={loading}
           />
         </div>
-        <div>
-          <label htmlFor="login-password" style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>
-            Password
-          </label>
+        <div className="form-row">
+          <label htmlFor="password" className="form-label">Password</label>
           <input
-            id="login-password"
+            id="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             required
-            className="input"
-            placeholder="Enter your password"
+            className="form-input"
+            disabled={loading}
           />
         </div>
-        <button type="submit" className="button" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-        <Link to="/forgot-password" className="text-link">
-          Forgot Password?
-        </Link>
-      </div>
-      <div style={{ position: 'relative', marginTop: '1.5rem' }}>
-        <div style={{ borderTop: '1px solid #D1D5DB', width: '100%' }}></div>
-        <div style={{ position: 'absolute', top: '-0.75rem', width: '100%', textAlign: 'center' }}>
-          <span style={{ backgroundColor: '#FFFFFF', padding: '0 0.5rem', color: '#6B7280', fontSize: '0.875rem' }}>
-            Or continue with
-          </span>
+        <div className="form-links">
+          <p>
+            <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="link-button"
+              disabled={loading}
+            >
+              Forgot password?
+            </button>
+          </p>
         </div>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '1rem' }}>
-        <button className="button" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FaGoogle size={16} style={{ color: '#DC2626' }} />
-          Google
-        </button>
-        <button className="button" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FaLinkedin size={16} style={{ color: '#2563EB' }} />
-          LinkedIn
-        </button>
-      </div>
+        <div className="form-buttons">
+          <button type="submit" className="button" disabled={loading}>
+            {loading ? 'Submitting...' : 'Send'}
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="button button-deny"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
